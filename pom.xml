@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.itude.mobile.maven.plugins</groupId>
+	<artifactId>android-calabash-runner</artifactId>
+	<packaging>maven-plugin</packaging>
+	<version>0.0.1.0-SNAPSHOT</version>
+	<name>Calabash for Android Runner</name>
+	<description>Maven plugin - Runs Calabash tests for Android</description>
+	<url>http://www.itude.com</url>
+	<inceptionYear>2013</inceptionYear>
+	<developers>
+		<developer>
+			<name>Ali Derbane</name>
+			<id>a.derbane</id>
+			<roles>
+				<role>Developer</role>
+				<role>Contributor</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<scm>
+		<connection>scm:git:git@127.0.0.1:itude-mobile-maven-plugin-android-calabash.git</connection>
+		<developerConnection>scm:git:git@127.0.0.1:itude-mobile-maven-plugin-android-calabash.git</developerConnection>
+		<url>scm:git:git@127.0.0.1:itude-mobile-maven-plugin-android-calabash.git</url>
+	</scm>
+
+	<properties>
+		<ciserver>https://mobiledev.itude.com/jenkins</ciserver>
+		<jira>https://mobiledev.itude.com/jira/</jira>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>itude-repos</id>
+			<name>itude-repos</name>
+			<url>http://localhost:8765/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>${ciserver}</url>
+	</ciManagement>
+
+	<issueManagement>
+		<system>jira</system>
+		<url>${jira}</url>
+	</issueManagement>
+
+	<distributionManagement>
+		<repository>
+			<id>itude</id>
+			<name>itude</name>
+			<url>http://localhost:8765/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>itude-snapshot</id>
+			<name>itude-snapshot</name>
+			<url>http://localhost:8765/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+
+</project>

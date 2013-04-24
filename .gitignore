@@ -1,0 +1,7 @@
+/bin
+/gen
+/target
+
+## generic files to ignore
+*.DS_Store
+
