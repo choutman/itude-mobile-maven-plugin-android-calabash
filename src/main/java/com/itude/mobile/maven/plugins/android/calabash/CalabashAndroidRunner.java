@@ -41,59 +41,83 @@ public class CalabashAndroidRunner extends AbstractMojo
   public static String PARAMETER_VERBOSE = "--verbose";
 
   /**
-   * @parameter alias="tags"
+   * @parameter 
+   *    alias="tags"
    */
   private String[]     _tags;
 
   /**
-   * @parameter alias="features"
+   * @parameter 
+   *    alias="features"
    */
   private String[]     _features;
 
   /**
-   * @parameter default-value="calabash-android", alias="command"
+   * @parameter 
+   *    alias="command"
+   *    default-value="calabash-android" 
    */
   private String       _command;
 
   /**
-   * @parameter default-value="run", alias="action"
+   * @parameter 
+   *    alias="action"
+   *    default-value="run"
    */
   private String       _action;
 
   /**
-   * @parameter alias="apkRootFolder"
+   * @parameter 
+   *    alias="apkRootFolder"
    */
   private String       _apkRootFolder;
 
   /**
-   * @parameter default-value=".*[^aligned]\\.apk$", alias="apkNameRegex"
+   * @parameter 
+   *    alias="apkNameRegex"
+   *    default-value=".*[^aligned]\\.apk$"
    */
   private String       _apkNameRegex;
 
   /**
-   * @parameter default-value="false", alias="verbose", 
+   * @parameter
+   *    alias="verbose"
+   *    default-value="false"
    */
   private boolean      _verbose;
 
   /**
-   * @parameter alias="format"
+   * @parameter 
+   *    alias="format"
    */
   private String       _format;
 
   /**
-   * @parameter alias="outputFile"
+   * @parameter 
+   *    alias="outputFile"
    */
   private String       _outputFile;
 
   /**
-   * @parameter alias = "outputFolder"
+   * @parameter 
+   *    alias = "outputFolder"
    */
   private String       _outputFolder;
 
   /**
-   * @parameter alias="customParameters"
+   * @parameter 
+   *    alias="customParameters"
    */
   private String[]     _customParameters;
+
+  /**
+   * We want to execute our command from the current project directory
+   * @parameter 
+   *    alias = "projectDirectory"
+   *    expression="${project.basedir}"
+   * @required
+   */
+  private File         _projectDirectory;
 
   @Override
   public void execute() throws MojoExecutionException
@@ -110,6 +134,7 @@ public class CalabashAndroidRunner extends AbstractMojo
     try
     {
       ProcessBuilder pb = getCalabashProcessBuilder();
+      pb.directory(_projectDirectory);
 
       getLog().info("Running command: '" + getPrintableCommand(pb.command()) + "'");
 
@@ -173,7 +198,7 @@ public class CalabashAndroidRunner extends AbstractMojo
 
         if (exitValue > 0)
         {
-          throw new RuntimeException("Oops, something went wrong while running your Calabash for Android!");
+          throw new RuntimeException("The Calabash test for Android failed!");
         }
       }
       catch (InterruptedException e)
@@ -199,9 +224,17 @@ public class CalabashAndroidRunner extends AbstractMojo
     commands.add(_action);
 
     /*
-     * Add our apk path to the commands
+     * Add our apk path to the commands or throw an expception if no apk file was found
      */
-    commands.add(getApkFile().toString());
+    File apkFile = getApkFile();
+    if (apkFile != null)
+    {
+      commands.add(getApkFile().toString());
+    }
+    else
+    {
+      throw new RuntimeException("No apk file was found in the specified path: " + getCanonicalApkRootFolder().toString());
+    }
 
     /*
      * Add features to the commands if we have any 
@@ -302,7 +335,10 @@ public class CalabashAndroidRunner extends AbstractMojo
   {
     if (_apkRootFolder != null && _apkRootFolder.length() > 0)
     {
-      File path = new File(_apkRootFolder);
+      /*
+       * We want to base our specified path on the projectDirectory
+       */
+      File path = new File(_projectDirectory, _apkRootFolder);
       try
       {
         return path.getCanonicalFile();
@@ -411,7 +447,10 @@ public class CalabashAndroidRunner extends AbstractMojo
        */
       if (_outputFolder != null && _outputFolder.length() > 0)
       {
-        File folder = new File(_outputFolder);
+        /*
+         * We want to base our outputFolder on the current projectFolder
+         */
+        File folder = new File(_projectDirectory, _outputFolder);
         if (!folder.isDirectory())
         {
           getLog().info("Creating non-existing output  folder: '" + folder.getCanonicalPath() + "'");
