@@ -101,8 +101,16 @@ public class CalabashAndroidRunner extends AbstractMojo
   /**
    * @parameter 
    *    alias = "outputFolder"
+   *    expression = "${project.build.directory}/calabash"
    */
-  private String       _outputFolder;
+  private File         _outputFolder;
+
+  /**
+   * @parameter 
+   *    alias = "featuresFolder"
+   *    expression = "${project.build.testOutputDirectory}"
+   */
+  private String       _featuresFolder;
 
   /**
    * @parameter 
@@ -134,7 +142,7 @@ public class CalabashAndroidRunner extends AbstractMojo
     try
     {
       ProcessBuilder pb = getCalabashProcessBuilder();
-      pb.directory(_projectDirectory);
+      pb.directory(_outputFolder);
 
       getLog().info("Running command: '" + getPrintableCommand(pb.command()) + "'");
 
@@ -360,6 +368,9 @@ public class CalabashAndroidRunner extends AbstractMojo
    */
   private void processFeatures(ArrayList<String> commands)
   {
+    // by default, at least add the default path
+    commands.add(_featuresFolder);
+
     if (_features != null && _features.length > 0)
     {
       /*
@@ -374,7 +385,7 @@ public class CalabashAndroidRunner extends AbstractMojo
            * We only want to add our feature to the command if it actually exists.
            * If not then we want to inform the user about this.
            */
-          if (featureFile.isFile())
+          if (featureFile.isFile() || featureFile.isDirectory())
           {
             commands.add(featureFile.getCanonicalPath());
           }
@@ -442,27 +453,13 @@ public class CalabashAndroidRunner extends AbstractMojo
 
     try
     {
-      /*
-       * If we provided an output folder we want to make sure it's an existing folder
-       */
-      if (_outputFolder != null && _outputFolder.length() > 0)
+      if (!_outputFolder.isDirectory())
       {
-        /*
-         * We want to base our outputFolder on the current projectFolder
-         */
-        File folder = new File(_projectDirectory, _outputFolder);
-        if (!folder.isDirectory())
-        {
-          getLog().info("Creating non-existing output  folder: '" + folder.getCanonicalPath() + "'");
-          folder.mkdirs();
-        }
+        getLog().info("Creating non-existing output  folder: '" + _outputFolder.getCanonicalPath() + "'");
+        _outputFolder.mkdirs();
+      }
 
-        output = new File(folder, _outputFile);
-      }
-      else
-      {
-        output = new File(_outputFile);
-      }
+      output = new File(_outputFolder, _outputFile);
 
       commands.add(PARAMETER_OUTPUT);
       commands.add(output.getCanonicalPath());
