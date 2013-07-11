@@ -269,10 +269,7 @@ public class CalabashAndroidRunner extends AbstractMojo
     /*
      * Where do we want our output to be saved
      */
-    if (_outputFile != null && _outputFile.length() > 0)
-    {
-      processOutputFile(commands);
-    }
+    processOutputFile(commands);
 
     /*
      * Do we want to run our calabash verbosely?
@@ -449,6 +446,11 @@ public class CalabashAndroidRunner extends AbstractMojo
    */
   private void processOutputFile(ArrayList<String> commands)
   {
+    if (_outputFolder == null)
+    {
+      getLog().debug("No output folder specified");
+      return;
+    }
     File output;
 
     try
@@ -459,7 +461,14 @@ public class CalabashAndroidRunner extends AbstractMojo
         _outputFolder.mkdirs();
       }
 
-      output = new File(_outputFolder, _outputFile);
+      if ("junit".equals(_format))
+      {
+        output = _outputFolder;
+      }
+      else
+      {
+        output = new File(_outputFolder, _outputFile);
+      }
 
       commands.add(PARAMETER_OUTPUT);
       commands.add(output.getCanonicalPath());
