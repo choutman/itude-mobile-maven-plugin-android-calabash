@@ -59,7 +59,7 @@ public class CalabashAndroidRunner extends AbstractMojo
   /**
    * @parameter
    *    alias="defaultReportsDirectory"
-   *    default-value="${project.build.directory}/surefire-report"
+   *    default-value="${project.build.directory}/surefire-reports"
    */
   private File         _defaultReportsDirectory;
 
