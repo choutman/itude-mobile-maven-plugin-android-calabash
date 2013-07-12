@@ -34,23 +34,41 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class CalabashAndroidRunner extends AbstractMojo
 {
-  public static String PARAMETER_TAG     = "--tag";
-  public static String PARAMETER_TAGS    = "--tags";
-  public static String PARAMETER_FORMAT  = "--format";
-  public static String PARAMETER_OUTPUT  = "--out";
-  public static String PARAMETER_VERBOSE = "--verbose";
+  public static String PARAMETER_TAG                 = "--tag";
+  public static String PARAMETER_TAGS                = "--tags";
+  public static String PARAMETER_FORMAT              = "--format";
+  public static String PARAMETER_OUTPUT              = "--out";
+  public static String PARAMETER_VERBOSE             = "--verbose";
+
+  public static String ENV_PARAMETER_SCREENSHOT_PATH = "SCREENSHOT_PATH";
 
   /**
-   * @parameter 
-   *    alias="tags"
+   * @parameter
+   *    alias="workingDirectory"
+   *    default-value="${project.build.directory}/calabash"
    */
-  private String[]     _tags;
+  private static File  _calabashWorkingDirectory;
 
   /**
-   * @parameter 
-   *    alias="features"
+   * @parameter
+   *    alias="projectBaseDirectory"
+   *    default-value="${project.basedir}"
    */
-  private String[]     _features;
+  private static File  _projectBaseDirectory;
+
+  /**
+   * @parameter
+   *    alias="defaultReportsDirectory"
+   *    default-value="${project.build.directory}/surefire-report"
+   */
+  private File         _defaultReportsDirectory;
+
+  /**
+   * @parameter
+   *    alias="defaultFeaturesDirectory"
+   *    default-value="${project.build.testOutputDirectory}"
+   */
+  private String       _defaultFeaturesDirectory;
 
   /**
    * @parameter 
@@ -81,51 +99,42 @@ public class CalabashAndroidRunner extends AbstractMojo
 
   /**
    * @parameter
+   *    alias="ignoreFailedTests"
+   *    default-value="false"
+   */
+  private boolean      _ignoreFailedTests;
+
+  /**
+   * @parameter
+   *    alias="screenshotsDirectory"
+   *    default-value="${project.build.directory}/screenshots"
+   */
+  private File         _screenshotsDirectory;
+
+  /**
+   * @parameter
    *    alias="verbose"
    *    default-value="false"
    */
   private boolean      _verbose;
 
   /**
-   * @parameter 
-   *    alias="format"
+   * @parameter
+   *    alias="features"
    */
-  private String       _format;
+  private List<String> _features;
 
   /**
-   * @parameter 
-   *    alias="outputFile"
+   * @parameter
+   *    alias="tags"
    */
-  private String       _outputFile;
+  private List<String> _tags;
 
   /**
-   * @parameter 
-   *    alias = "outputFolder"
-   *    expression = "${project.build.directory}/calabash"
+   * @parameter
+   *    alias="reports"
    */
-  private File         _outputFolder;
-
-  /**
-   * @parameter 
-   *    alias = "featuresFolder"
-   *    expression = "${project.build.testOutputDirectory}"
-   */
-  private String       _featuresFolder;
-
-  /**
-   * @parameter 
-   *    alias="customParameters"
-   */
-  private String[]     _customParameters;
-
-  /**
-   * We want to execute our command from the current project directory
-   * @parameter 
-   *    alias = "projectDirectory"
-   *    expression="${project.basedir}"
-   * @required
-   */
-  private File         _projectDirectory;
+  private List<Report> _reports;
 
   @Override
   public void execute() throws MojoExecutionException
@@ -138,11 +147,15 @@ public class CalabashAndroidRunner extends AbstractMojo
    */
   private void runCalabashProcess()
   {
-
     try
     {
+      if (!_calabashWorkingDirectory.exists())
+      {
+        _calabashWorkingDirectory.mkdirs();
+      }
+
       ProcessBuilder pb = getCalabashProcessBuilder();
-      pb.directory(_outputFolder);
+      pb.directory(_calabashWorkingDirectory);
 
       getLog().info("Running command: '" + getPrintableCommand(pb.command()) + "'");
 
@@ -206,8 +219,14 @@ public class CalabashAndroidRunner extends AbstractMojo
 
         if (exitValue > 0)
         {
-          getLog().error("The Calabash test for Android failed!");
-          //          throw new RuntimeException("The Calabash test for Android failed!");
+          if (_ignoreFailedTests)
+          {
+            getLog().error("The Calabash test for Android failed!");
+          }
+          else
+          {
+            throw new RuntimeException("The Calabash test for Android failed!");
+          }
         }
       }
       catch (InterruptedException e)
@@ -229,6 +248,7 @@ public class CalabashAndroidRunner extends AbstractMojo
   private ProcessBuilder getCalabashProcessBuilder()
   {
     ArrayList<String> commands = new ArrayList<String>();
+
     commands.add(_command);
     commands.add(_action);
 
@@ -245,48 +265,15 @@ public class CalabashAndroidRunner extends AbstractMojo
       throw new RuntimeException("No apk file was found in the specified path: " + getCanonicalApkRootFolder().toString());
     }
 
-    /*
-     * Add features to the commands if we have any 
-     */
-    processFeatures(commands);
+    addReportsToCommand(commands);
 
-    /*
-     * Let's process our tags if we have any
-     */
-    if (_tags != null && _tags.length > 0)
-    {
-      processTags(commands);
-    }
+    addFeaturesToCommand(commands);
 
-    /*
-     * How do we want to format our result
-     */
-    if (_format != null && _format.length() > 0)
-    {
-      commands.add(PARAMETER_FORMAT);
-      commands.add(_format);
-    }
+    addTagsToCommand(commands);
 
-    /*
-     * Where do we want our output to be saved
-     */
-    processOutputFile(commands);
+    addVerboseToCommand(commands);
 
-    /*
-     * Do we want to run our calabash verbosely?
-     */
-    if (_verbose)
-    {
-      commands.add(PARAMETER_VERBOSE);
-    }
-
-    /*
-     * In case we want to have some custom parameters
-     */
-    if (_customParameters != null && _customParameters.length > 0)
-    {
-      processCustomParameters(commands);
-    }
+    addScreenshotsDirectoryToCommand(commands);
 
     return new ProcessBuilder(commands);
   }
@@ -344,7 +331,7 @@ public class CalabashAndroidRunner extends AbstractMojo
       /*
        * We want to base our specified path on the projectDirectory
        */
-      File path = new File(_projectDirectory, _apkRootFolder);
+      File path = new File(_projectBaseDirectory, _apkRootFolder);
       try
       {
         return path.getCanonicalFile();
@@ -364,12 +351,12 @@ public class CalabashAndroidRunner extends AbstractMojo
    * that will be used to build up our process
    * @param commands
    */
-  private void processFeatures(ArrayList<String> commands)
+  private void addFeaturesToCommand(ArrayList<String> commands)
   {
     // by default, at least add the default path
-    commands.add(_featuresFolder);
+    commands.add(_defaultFeaturesDirectory);
 
-    if (_features != null && _features.length > 0)
+    if (_features != null)
     {
       /*
        * Loop through all provided features
@@ -409,15 +396,20 @@ public class CalabashAndroidRunner extends AbstractMojo
    * Also we want to add the necessary '@' before the tag and a ',' after the tag if multiple tags were provided
    * @param commands
    */
-  private void processTags(ArrayList<String> commands)
+  private void addTagsToCommand(ArrayList<String> commands)
   {
-    if (_tags.length == 1)
+    if (_tags == null)
+    {
+      return;
+    }
+
+    if (_tags.size() == 1)
     {
       /*
        * Only one tag was provided
        */
       commands.add(PARAMETER_TAG);
-      commands.add("@" + _tags[0]);
+      commands.add("@" + _tags.get(0));
     }
     else
     {
@@ -427,11 +419,11 @@ public class CalabashAndroidRunner extends AbstractMojo
       commands.add(PARAMETER_TAGS);
 
       StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < _tags.length; i++)
+      for (int i = 0; i < _tags.size(); i++)
       {
-        sb.append("@").append(_tags[i]);
+        sb.append("@").append(_tags.get(i));
 
-        if (i < _tags.length - 1)
+        if (i < _tags.size() - 1)
         {
           sb.append(",");
         }
@@ -440,58 +432,80 @@ public class CalabashAndroidRunner extends AbstractMojo
     }
   }
 
-  /**
-   * Output files can be used to write json to for example. 
-   * If we provided an outputFolder we want to make sure it exists before trying to make calabash write to a non-existing folder.
-   * @param commands
-   */
-  private void processOutputFile(ArrayList<String> commands)
+  private void addReportsToCommand(ArrayList<String> commands)
   {
-    if (_outputFolder == null)
+    if (_reports != null)
     {
-      getLog().debug("No output folder specified");
-      return;
-    }
-    File output;
-
-    try
-    {
-      if (!_outputFolder.isDirectory())
+      for (Report report : _reports)
       {
-        getLog().info("Creating non-existing output  folder: '" + _outputFolder.getCanonicalPath() + "'");
-        _outputFolder.mkdirs();
-      }
+        String format = report.getFormat();
 
-      if ("junit".equals(_format))
-      {
-        output = _outputFolder;
-      }
-      else
-      {
-        output = new File(_outputFolder, _outputFile);
-      }
+        if (format == null)
+        {
+          throw new NullPointerException("format is required for report");
+        }
 
-      commands.add(PARAMETER_OUTPUT);
-      commands.add(output.getCanonicalPath());
+        File path = report.getPath();
+        if (path == null)
+        {
+          path = _defaultReportsDirectory;
+        }
+        getLog().debug("Report: " + report.getFormat() + ", " + path + ", " + report.getFileName());
+
+        if (!path.exists())
+        {
+          path.mkdirs();
+        }
+
+        String pathString;
+        try
+        {
+          pathString = path.getCanonicalPath();
+        }
+        catch (IOException e)
+        {
+          throw new RuntimeException(e);
+        }
+
+        String fileName = report.getFileName();
+        if (fileName != null)
+        {
+          pathString += File.separator + fileName;
+        }
+
+        commands.add(PARAMETER_FORMAT);
+        commands.add(format);
+
+        commands.add(PARAMETER_OUTPUT);
+
+        commands.add(pathString);
+
+      }
     }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
-
   }
 
-  /**
-   * User can provide custom parameters. This method will add these parameters as the commands used to start the process.
-   * @param commands
-   */
-  private void processCustomParameters(ArrayList<String> commands)
+  private void addVerboseToCommand(ArrayList<String> commands)
   {
-    for (String parameter : _customParameters)
+    if (_verbose)
     {
-      commands.add(parameter);
+      commands.add(PARAMETER_VERBOSE);
     }
+  }
 
+  private void addScreenshotsDirectoryToCommand(ArrayList<String> commands)
+  {
+    if (_screenshotsDirectory != null)
+    {
+      if (!_screenshotsDirectory.exists())
+      {
+        _screenshotsDirectory.mkdirs();
+      }
+
+      getLog().debug("Saving screenshots to " + _screenshotsDirectory);
+
+      String screenshotsPath = ENV_PARAMETER_SCREENSHOT_PATH + "=\"" + _screenshotsDirectory + File.separator + "\"";
+      commands.add(screenshotsPath);
+    }
   }
 
   /**
