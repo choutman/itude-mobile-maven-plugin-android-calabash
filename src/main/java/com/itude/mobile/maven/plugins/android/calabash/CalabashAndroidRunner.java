@@ -34,107 +34,108 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class CalabashAndroidRunner extends AbstractMojo
 {
-  public static String PARAMETER_TAG                 = "--tag";
-  public static String PARAMETER_TAGS                = "--tags";
-  public static String PARAMETER_FORMAT              = "--format";
-  public static String PARAMETER_OUTPUT              = "--out";
-  public static String PARAMETER_VERBOSE             = "--verbose";
+  public static String       PARAMETER_TAG                 = "--tag";
+  public static String       PARAMETER_TAGS                = "--tags";
+  public static String       PARAMETER_FORMAT              = "--format";
+  public static String       PARAMETER_OUTPUT              = "--out";
+  public static String       PARAMETER_VERBOSE             = "--verbose";
+  public static final String FORMAT_PRETTY                 = "pretty";
 
-  public static String ENV_PARAMETER_SCREENSHOT_PATH = "SCREENSHOT_PATH";
+  public static String       ENV_PARAMETER_SCREENSHOT_PATH = "SCREENSHOT_PATH";
 
   /**
    * @parameter
    *    alias="workingDirectory"
    *    default-value="${project.build.directory}/calabash"
    */
-  private static File  _calabashWorkingDirectory;
+  private static File        _calabashWorkingDirectory;
 
   /**
    * @parameter
    *    alias="projectBaseDirectory"
    *    default-value="${project.basedir}"
    */
-  private static File  _projectBaseDirectory;
+  private static File        _projectBaseDirectory;
 
   /**
    * @parameter
    *    alias="defaultReportsDirectory"
    *    default-value="${project.build.directory}/surefire-reports"
    */
-  private File         _defaultReportsDirectory;
+  private File               _defaultReportsDirectory;
 
   /**
    * @parameter
    *    alias="defaultFeaturesDirectory"
    *    default-value="${project.build.testOutputDirectory}"
    */
-  private String       _defaultFeaturesDirectory;
+  private String             _defaultFeaturesDirectory;
 
   /**
    * @parameter 
    *    alias="command"
    *    default-value="calabash-android" 
    */
-  private String       _command;
+  private String             _command;
 
   /**
    * @parameter 
    *    alias="action"
    *    default-value="run"
    */
-  private String       _action;
+  private String             _action;
 
   /**
    * @parameter 
    *    alias="apkRootFolder"
    */
-  private String       _apkRootFolder;
+  private String             _apkRootFolder;
 
   /**
    * @parameter 
    *    alias="apkNameRegex"
    *    default-value=".*[^aligned]\\.apk$"
    */
-  private String       _apkNameRegex;
+  private String             _apkNameRegex;
 
   /**
    * @parameter
    *    alias="ignoreFailedTests"
    *    default-value="false"
    */
-  private boolean      _ignoreFailedTests;
+  private boolean            _ignoreFailedTests;
 
   /**
    * @parameter
    *    alias="screenshotsDirectory"
    *    default-value="${project.build.directory}/screenshots"
    */
-  private File         _screenshotsDirectory;
+  private File               _screenshotsDirectory;
 
   /**
    * @parameter
    *    alias="verbose"
    *    default-value="false"
    */
-  private boolean      _verbose;
+  private boolean            _verbose;
 
   /**
    * @parameter
    *    alias="features"
    */
-  private List<String> _features;
+  private List<String>       _features;
 
   /**
    * @parameter
    *    alias="tags"
    */
-  private List<String> _tags;
+  private List<String>       _tags;
 
   /**
    * @parameter
    *    alias="reports"
    */
-  private List<Report> _reports;
+  private List<Report>       _reports;
 
   @Override
   public void execute() throws MojoExecutionException
@@ -434,6 +435,10 @@ public class CalabashAndroidRunner extends AbstractMojo
 
   private void addReportsToCommand(ArrayList<String> commands)
   {
+    // default print pretty format to stdout
+    commands.add(PARAMETER_FORMAT);
+    commands.add(FORMAT_PRETTY);
+
     if (_reports != null)
     {
       for (Report report : _reports)
@@ -468,6 +473,7 @@ public class CalabashAndroidRunner extends AbstractMojo
         }
 
         String fileName = report.getFileName();
+
         if (fileName != null)
         {
           pathString += File.separator + fileName;
@@ -477,9 +483,7 @@ public class CalabashAndroidRunner extends AbstractMojo
         commands.add(format);
 
         commands.add(PARAMETER_OUTPUT);
-
         commands.add(pathString);
-
       }
     }
   }
