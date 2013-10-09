@@ -1,5 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.itude.poms</groupId>
+		<artifactId>itude-jenkins</artifactId>
+		<version>1.8</version>
+	</parent>
 	<groupId>com.itude.mobile.maven.plugins</groupId>
 	<artifactId>android-calabash-runner</artifactId>
 	<packaging>maven-plugin</packaging>
@@ -40,8 +45,6 @@
 	</scm>
 
 	<properties>
-		<ciserver>https://mobiledev.itude.com/jenkins</ciserver>
-		<jira>https://mobiledev.itude.com/jira/</jira>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -58,43 +61,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<id>itude-repos</id>
-			<name>itude-repos</name>
-			<url>http://localhost:8765/nexus/content/groups/public/</url>
-		</repository>
-	</repositories>
-
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>${ciserver}</url>
-	</ciManagement>
-
-	<issueManagement>
-		<system>jira</system>
-		<url>${jira}</url>
-	</issueManagement>
-
-	<distributionManagement>
-		<repository>
-			<id>itude</id>
-			<name>itude</name>
-			<url>http://localhost:8765/nexus/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>itude-snapshot</id>
-			<name>itude-snapshot</name>
-			<url>http://localhost:8765/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 </project>
