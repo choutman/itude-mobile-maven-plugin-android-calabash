@@ -55,9 +55,9 @@
 	</issueManagement>
 
 	<scm>
-		<connection>ttps://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash</connection>
-		<developerConnection>scm:git:git://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash.git</developerConnection>
-		<url>scm:git:git@github.com:ItudeMobile/itude-mobile-maven-plugin-android-calabash.git</url>
+		<url>https://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash</url>
+		<connection>scm:git:git://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash.git</connection>
+		<developerConnection>scm:git:git@github.com:ItudeMobile/itude-mobile-maven-plugin-android-calabash.git</developerConnection>
 	</scm>
 
 	<properties>
