@@ -1,14 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.itude.poms</groupId>
-		<artifactId>itude-jenkins</artifactId>
-		<version>1.8</version>
-	</parent>
 	<groupId>com.itude.mobile.maven.plugins</groupId>
 	<artifactId>android-calabash-runner</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>0.0.1.5-SNAPSHOT</version>
+	<version>0.1.0.0-SNAPSHOT</version>
 	<name>Calabash for Android Runner</name>
 	<description>Maven plugin - Runs Calabash tests for Android</description>
 	<url>http://www.itude.com</url>
@@ -17,6 +12,22 @@
 		<developer>
 			<name>Ali Derbane</name>
 			<id>a.derbane</id>
+			<roles>
+				<role>Developer</role>
+				<role>Contributor</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Wiebe Elsinga</name>
+			<id>w.elsinga</id>
+			<roles>
+				<role>Developer</role>
+				<role>Contributor</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Coen Houtman</name>
+			<id>c.houtman</id>
 			<roles>
 				<role>Developer</role>
 				<role>Contributor</role>
@@ -37,11 +48,16 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<issueManagement>
+		<url>https://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git@127.0.0.1:itude-mobile-maven-plugin-android-calabash.git</connection>
-		<developerConnection>scm:git:git@127.0.0.1:itude-mobile-maven-plugin-android-calabash.git</developerConnection>
-		<url>scm:git:git@127.0.0.1:itude-mobile-maven-plugin-android-calabash.git</url>
+		<connection>ttps://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash</connection>
+		<developerConnection>scm:git:git://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash.git</developerConnection>
+		<url>scm:git:git@github.com:ItudeMobile/itude-mobile-maven-plugin-android-calabash.git</url>
 	</scm>
 
 	<properties>
