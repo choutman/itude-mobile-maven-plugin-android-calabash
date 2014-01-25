@@ -4,7 +4,7 @@ itude-mobile-maven-plugin-android-calabash
 Maven plugin that runs Calabash tests for Android
 
 # Background
-At our office there was a need to run Calabash using Maven for complete continuous integration. But there was no plugin available. During presentations we gave at various events, we discovered there was a need for this kind of plugin.
+With [Calabash](http://calaba.sh) you can write your app tests in a langauge that's easy to understand for anyone. This plugin allows you to configure and run Calabash for Android in your Maven project.
 
 # Prerequisites
 This maven plugin requires the following:
