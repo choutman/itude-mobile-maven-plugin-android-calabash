@@ -83,4 +83,8 @@ For contributors using Eclipse there's a [formatter](http://mobbl.org/downloads/
 
 ## License
 The code in this project is licensed under the Apache Software License 2.0, per the terms of the included LICENSE file.
+
+##Attributions
+
+The initial version was written by [Ali Derbane](https://github.com/aderbane), [Coen Houtman](https://github.com/choutman) and [Wiebe Elsinga](https://github.com/welsinga)
 	
