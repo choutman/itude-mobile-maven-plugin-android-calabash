@@ -8,11 +8,12 @@ With [Calabash](http://calaba.sh) you can write your app tests in a langauge tha
 
 # Prerequisites
 This maven plugin requires the following:
-1. Ruby is installed
-2. Gem calabash-android is installed
-3. The command calabash-android is available on the path
+- Ruby is installed
+- Gem calabash-android is installed
+- The command calabash-android is available on the path
 
 # Usage
+```xml
 <build>
 		<defaultGoal>test</defaultGoal>
 		
@@ -69,3 +70,17 @@ This maven plugin requires the following:
 
 		</plugins>
 	</build>
+```	
+## Contribute
+
+If you find a bug or have a new feature you want to add, just create a pull request and submit it to us. You can also [file an issue](https://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash/issues/new).
+
+Please note, if you have a pull request, make sure to use the [develop branch](https://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash/tree/develop) as your base.
+
+#### Formatting
+
+For contributors using Eclipse there's a [formatter](http://mobbl.org/downloads/code-format.xml) available.
+
+## License
+The code in this project is licensed under the Apache Software License 2.0, per the terms of the included LICENSE file.
+	
