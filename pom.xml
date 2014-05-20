@@ -73,7 +73,7 @@
 	<scm>
 		<url>https://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash</url>
 		<connection>scm:git:git://github.com/ItudeMobile/itude-mobile-maven-plugin-android-calabash.git</connection>
-		<developerConnection>scm:git:git@github.com:ItudeMobile/itude-mobile-maven-plugin-android-calabash.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:ItudeMobile/itude-mobile-maven-plugin-android-calabash.git/</developerConnection>
 	</scm>
 
 	<properties>
