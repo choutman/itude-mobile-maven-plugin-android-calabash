@@ -18,24 +18,17 @@ package com.itude.mobile.maven.plugins.android.calabash;
 
 import java.io.File;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 public class Report
 {
-  /**
-   * @parameter
-   *    alias="format"
-   */
+  @Parameter(alias = "format")
   private String _format;
 
-  /**
-   * @parameter
-   *    alias="path"
-   */
+  @Parameter(alias = "path")
   private File   _path;
 
-  /**
-   * @parameter
-   *    alias="fileName"
-   */
+  @Parameter(alias = "fileName")
   private String _fileName;
 
   public String getFormat()

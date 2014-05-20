@@ -25,13 +25,16 @@ import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Wrapper plugin to run calabash for Android. Plugin depends on the calabash-android commandline to function.
  * 
- * @goal test
- * @description  Wrapper plugin to run calabash for Android. Plugin depends on the calabash-android commandline to function.
  */
+
+@Mojo(name = "test", defaultPhase = LifecyclePhase.TEST)
 public class CalabashAndroidRunner extends AbstractMojo
 {
   public static String       PARAMETER_TAG                 = "--tag";
@@ -43,98 +46,49 @@ public class CalabashAndroidRunner extends AbstractMojo
 
   public static String       ENV_PARAMETER_SCREENSHOT_PATH = "SCREENSHOT_PATH";
 
-  /**
-   * @parameter
-   *    alias="workingDirectory"
-   *    default-value="${project.build.directory}/calabash"
-   */
-  private static File        _calabashWorkingDirectory;
+  @Parameter(defaultValue = "Kut")
+  private String             _bla;
 
-  /**
-   * @parameter
-   *    alias="projectBaseDirectory"
-   *    default-value="${project.basedir}"
-   */
-  private static File        _projectBaseDirectory;
+  @Parameter(alias = "workingDirectory", defaultValue = "${project.build.directory}/calabash")
+  private File               _calabashWorkingDirectory;
 
-  /**
-   * @parameter
-   *    alias="defaultReportsDirectory"
-   *    default-value="${project.build.directory}/surefire-reports"
-   */
+  @Parameter(alias = "projectBaseDirectory", defaultValue = "${project.basedir}")
+  private File               _projectBaseDirectory;
+
+  @Parameter(alias = "defaultReportsDirectory", defaultValue = "${project.build.directory}/surefire-reports")
   private File               _defaultReportsDirectory;
 
-  /**
-   * @parameter
-   *    alias="defaultFeaturesDirectory"
-   *    default-value="${project.build.testOutputDirectory}"
-   */
+  @Parameter(alias = "defaultFeaturesDirectory", defaultValue = "${project.build.testOutputDirectory}")
   private String             _defaultFeaturesDirectory;
 
-  /**
-   * @parameter 
-   *    alias="command"
-   *    default-value="calabash-android" 
-   */
+  @Parameter(alias = "command", defaultValue = "calabash-android")
   private String             _command;
 
-  /**
-   * @parameter 
-   *    alias="action"
-   *    default-value="run"
-   */
+  @Parameter(alias = "action", defaultValue = "run")
   private String             _action;
 
-  /**
-   * @parameter 
-   *    alias="apkRootFolder"
-   */
+  @Parameter(alias = "apkRootFolder")
   private String             _apkRootFolder;
 
-  /**
-   * @parameter 
-   *    alias="apkNameRegex"
-   *    default-value=".*[^aligned]\\.apk$"
-   */
+  @Parameter(alias = "apkNameRegex", defaultValue = ".*[^aligned]\\.apk$")
   private String             _apkNameRegex;
 
-  /**
-   * @parameter
-   *    alias="ignoreFailedTests"
-   *    default-value="false"
-   */
+  @Parameter(alias = "ignoreFailedTests", defaultValue = "false")
   private boolean            _ignoreFailedTests;
 
-  /**
-   * @parameter
-   *    alias="screenshotsDirectory"
-   *    default-value="${project.build.directory}/screenshots"
-   */
+  @Parameter(alias = "screenshotsDirectory", defaultValue = "${project.build.directory}/screenshots")
   private File               _screenshotsDirectory;
 
-  /**
-   * @parameter
-   *    alias="verbose"
-   *    default-value="false"
-   */
+  @Parameter(alias = "verbose", defaultValue = "false")
   private boolean            _verbose;
 
-  /**
-   * @parameter
-   *    alias="features"
-   */
+  @Parameter(alias = "features")
   private List<String>       _features;
 
-  /**
-   * @parameter
-   *    alias="tags"
-   */
+  @Parameter(alias = "tags")
   private List<String>       _tags;
 
-  /**
-   * @parameter
-   *    alias="reports"
-   */
+  @Parameter(alias = "reports")
   private List<Report>       _reports;
 
   @Override
@@ -150,6 +104,8 @@ public class CalabashAndroidRunner extends AbstractMojo
   {
     try
     {
+      getLog().info("bla: '" + _bla);
+
       if (!_calabashWorkingDirectory.exists())
       {
         _calabashWorkingDirectory.mkdirs();
